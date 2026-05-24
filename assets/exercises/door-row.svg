@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Door lean row">
+  <rect width="320" height="200" fill="#f5f0e6"/>
+  <rect x="40" y="40" width="20" height="140" fill="#8b6914"/>
+  <line x1="120" y1="150" x2="60" y2="80" stroke="#1a4d4d" stroke-width="8"/>
+  <line x1="120" y1="150" x2="180" y2="150" stroke="#1a4d4d" stroke-width="8"/>
+  <circle cx="180" cy="145" r="12" fill="#1a4d4d"/>
+  <text x="20" y="30" font-family="sans-serif" font-size="14" fill="#1a4d4d">Solid frame · pull chest in</text>
+</svg>

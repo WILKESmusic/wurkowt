@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Prone Y-T-W">
+  <rect width="320" height="200" fill="#f5f0e6"/>
+  <ellipse cx="160" cy="140" rx="80" ry="25" fill="#e8e0d0"/>
+  <line x1="100" y1="120" x2="80" y2="70" stroke="#1a4d4d" stroke-width="6"/>
+  <line x1="220" y1="120" x2="240" y2="70" stroke="#1a4d4d" stroke-width="6"/>
+  <text x="20" y="30" font-family="sans-serif" font-size="14" fill="#1a4d4d">Face down · thumbs up · light reps</text>
+</svg>

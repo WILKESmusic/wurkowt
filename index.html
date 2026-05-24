@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a4d4d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="WurkOwt" />
+  <title>WurkOwt</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    window.WURKOWT_BASE = (function () {
+      var p = location.pathname;
+      if (p.indexOf('/wurkowt') !== -1) return '/wurkowt';
+      return '';
+    })();
+  </script>
+</head>
+<body>
+  <div id="app">
+    <!-- Onboarding -->
+    <section id="screen-onboarding" class="screen hidden">
+      <header class="screen-header">
+        <h1 class="brand">WurkOwt</h1>
+        <p class="subtitle">Your body recomposition program. Let's save your starting point.</p>
+      </header>
+      <form id="onboarding-form" class="card stack">
+        <label>Weight (lb) <input type="number" name="weight" step="0.1" required placeholder="174" /></label>
+        <label>Push-ups you can do now (incline OK) <input type="number" name="pushups" min="0" placeholder="12" /></label>
+        <label>Notes <textarea name="notes" rows="2" placeholder="Former baseball, forearm tendinitis…"></textarea></label>
+        <button type="submit" class="btn btn-primary">Start program</button>
+      </form>
+    </section>
+
+    <!-- Home -->
+    <section id="screen-home" class="screen hidden">
+      <header class="home-header">
+        <h1 class="brand">WurkOwt</h1>
+        <p id="home-progress" class="chip"></p>
+      </header>
+      <article id="home-hero" class="hero card"></article>
+      <nav class="home-actions stack">
+        <button id="btn-start" class="btn btn-primary">Start session</button>
+        <button id="btn-prep" class="btn btn-secondary">What do I need today?</button>
+        <button id="btn-weigh" class="btn btn-ghost">Log weigh-in</button>
+        <button id="btn-history" class="btn btn-ghost">Progress & history</button>
+        <button id="btn-settings" class="btn btn-ghost">Settings</button>
+      </nav>
+    </section>
+
+    <!-- Prep / gear -->
+    <section id="screen-prep" class="screen hidden">
+      <header class="screen-header bar">
+        <button type="button" class="btn-back" data-back="home">←</button>
+        <h2>Before you start</h2>
+      </header>
+      <div id="prep-content" class="card stack"></div>
+      <label class="check-row"><input type="checkbox" id="prep-confirm" /> I have everything ready</label>
+      <button id="btn-prep-start" class="btn btn-primary" disabled>Enter workout</button>
+    </section>
+
+    <!-- Rest -->
+    <section id="screen-rest" class="screen hidden">
+      <header class="screen-header bar">
+        <button type="button" class="btn-back" data-back="home">←</button>
+        <h2>Rest day</h2>
+      </header>
+      <div id="rest-content" class="card stack"></div>
+      <button id="btn-rest-walk" class="btn btn-secondary">Start 20 min easy walk</button>
+      <button id="btn-train-anyway" class="btn btn-ghost">Train anyway</button>
+    </section>
+
+    <!-- Train anyway modal -->
+    <dialog id="dialog-train-anyway" class="dialog">
+      <div id="train-anyway-body" class="stack"></div>
+      <div class="dialog-actions">
+        <button type="button" id="btn-train-cancel" class="btn btn-ghost">Stay on rest</button>
+        <button type="button" id="btn-train-go" class="btn btn-primary">Do suggested workout</button>
+      </div>
+    </dialog>
+
+    <!-- Cardio choice -->
+    <section id="screen-cardio-pick" class="screen hidden">
+      <header class="screen-header bar">
+        <button type="button" class="btn-back" data-back="home">←</button>
+        <h2>Cardio today</h2>
+      </header>
+      <p class="lead">Choose your plan. Timers and intervals are spelled out step by step.</p>
+      <button id="btn-cardio-outdoor" class="btn btn-primary card-btn">Outdoor run/walk intervals</button>
+      <button id="btn-cardio-indoor" class="btn btn-secondary card-btn">Stay indoors (basement)</button>
+    </section>
+
+    <!-- Session -->
+    <section id="screen-session" class="screen hidden">
+      <header class="session-top">
+        <button type="button" class="btn-back" data-back="home">←</button>
+        <div>
+          <p id="session-phase-label" class="phase-label">Warmup</p>
+          <p id="session-progress" class="progress-text"></p>
+        </div>
+        <button type="button" id="btn-skip-session" class="btn-text">Skip day</button>
+      </header>
+      <div id="session-body"></div>
+      <footer id="session-footer" class="session-footer"></footer>
+    </section>
+
+    <!-- Rest timer overlay -->
+    <div id="timer-overlay" class="timer-overlay hidden" aria-live="polite">
+      <p class="timer-label">Rest</p>
+      <p id="timer-display" class="timer-display">1:30</p>
+      <button id="btn-skip-rest" class="btn btn-secondary">Skip rest</button>
+    </div>
+
+    <!-- Interval overlay (cardio / sculpt) -->
+    <div id="interval-overlay" class="timer-overlay hidden" aria-live="polite">
+      <p id="interval-label" class="timer-label"></p>
+      <p id="interval-display" class="timer-display">0:40</p>
+      <p id="interval-hint" class="interval-hint"></p>
+      <button id="btn-skip-interval" class="btn btn-secondary">Skip</button>
+    </div>
+
+    <!-- History -->
+    <section id="screen-history" class="screen hidden">
+      <header class="screen-header bar">
+        <button type="button" class="btn-back" data-back="home">←</button>
+        <h2>Progress</h2>
+      </header>
+      <div id="history-content" class="stack"></div>
+    </section>
+
+    <!-- Settings -->
+    <section id="screen-settings" class="screen hidden">
+      <header class="screen-header bar">
+        <button type="button" class="btn-back" data-back="home">←</button>
+        <h2>Settings</h2>
+      </header>
+      <div class="card stack settings-form">
+        <fieldset>
+          <legend>Reminders</legend>
+          <label><input type="checkbox" id="set-reminders" /> Morning & evening nudges</label>
+          <label>Morning <input type="time" id="set-morning" value="07:00" /></label>
+          <label>Evening <input type="time" id="set-evening" value="20:30" /></label>
+        </fieldset>
+        <fieldset>
+          <legend>Cardio default</legend>
+          <select id="set-cardio-default">
+            <option value="ask">Ask each Cardio day</option>
+            <option value="outdoor">Outdoor</option>
+            <option value="indoor">Indoor</option>
+          </select>
+        </fieldset>
+        <fieldset>
+          <legend>Today</legend>
+          <label><input type="checkbox" id="set-forearms-sore" /> Forearms sore today</label>
+          <label>Backpack working weight (lb) <input type="number" id="set-backpack" min="0" step="1" /></label>
+          <label><input type="checkbox" id="set-door-row" /> I can use door-frame rows</label>
+        </fieldset>
+        <button id="btn-benchmark" class="btn btn-secondary">Run benchmark check</button>
+        <button id="btn-reset-queue" class="btn btn-ghost danger">Reset plan to Push</button>
+      </div>
+    </section>
+
+    <!-- Weigh-in dialog -->
+    <dialog id="dialog-weigh" class="dialog">
+      <form id="weigh-form" class="stack">
+        <h3>Weigh-in</h3>
+        <label>Weight (lb) <input type="number" name="weight" step="0.1" required /></label>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-ghost" data-close="dialog-weigh">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Exercise demo dialog -->
+    <dialog id="dialog-demo" class="dialog demo-dialog">
+      <div id="demo-content"></div>
+      <button type="button" class="btn btn-primary" data-close="dialog-demo">Close</button>
+    </dialog>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

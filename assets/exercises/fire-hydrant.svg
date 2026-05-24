@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Fire hydrant">
+  <rect width="320" height="200" fill="#f5f0e6"/>
+  <line x1="100" y1="150" x2="180" y2="120" stroke="#1a4d4d" stroke-width="8"/>
+  <line x1="180" y1="120" x2="220" y2="90" stroke="#1a4d4d" stroke-width="8"/>
+  <line x1="180" y1="120" x2="160" y2="80" stroke="#b8860b" stroke-width="8"/>
+  <text x="20" y="30" font-family="sans-serif" font-size="14" fill="#1a4d4d">On all fours · lift knee to side</text>
+</svg>

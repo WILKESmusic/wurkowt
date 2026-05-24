@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Reverse lunge">
+  <rect width="320" height="200" fill="#f5f0e6"/>
+  <circle cx="150" cy="55" r="14" fill="#1a4d4d"/>
+  <line x1="150" y1="69" x2="150" y2="105" stroke="#1a4d4d" stroke-width="8"/>
+  <line x1="150" y1="105" x2="150" y2="155" stroke="#1a4d4d" stroke-width="8"/>
+  <line x1="150" y1="105" x2="210" y2="155" stroke="#1a4d4d" stroke-width="8"/>
+  <text x="20" y="30" font-family="sans-serif" font-size="14" fill="#1a4d4d">Step back · torso tall</text>
+</svg>

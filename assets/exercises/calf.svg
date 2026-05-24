@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Calf raise">
+  <rect width="320" height="200" fill="#f5f0e6"/>
+  <line x1="150" y1="60" x2="150" y2="120" stroke="#1a4d4d" stroke-width="8"/>
+  <line x1="150" y1="120" x2="140" y2="165" stroke="#1a4d4d" stroke-width="6"/>
+  <line x1="150" y1="120" x2="160" y2="165" stroke="#1a4d4d" stroke-width="6"/>
+  <text x="20" y="30" font-family="sans-serif" font-size="14" fill="#1a4d4d">Rise on toes · slow lower</text>
+</svg>
