@@ -44,49 +44,86 @@
     return m + ':' + String(s).padStart(2, '0');
   }
 
-  function registerSW() {
+  function clearOldCaches() {
     if (!('serviceWorker' in navigator)) return;
-    const swPath = asset('sw.js');
-    navigator.serviceWorker.register(swPath).catch(function () {});
+    navigator.serviceWorker.getRegistrations().then(function (regs) {
+      regs.forEach(function (r) { r.unregister(); });
+    });
+    if (window.caches && caches.keys) {
+      caches.keys().then(function (keys) {
+        keys.forEach(function (k) { caches.delete(k); });
+      });
+    }
   }
 
   function init() {
-    registerSW();
-    bindGlobal();
-    if (!state.onboarded) {
-      showScreen('onboarding');
-      return;
+    try {
+      if (!window.WURKOWT || !window.WurkStorage) {
+        showBootError('App files did not load. Pull down to refresh this page.');
+        return;
+      }
+      clearOldCaches();
+      bindGlobal();
+      if (!state.onboarded) {
+        showScreen('onboarding');
+        return;
+      }
+      renderHome();
+      showScreen('home');
+      checkBenchmarkPrompt();
+      scheduleReminders();
+    } catch (err) {
+      showBootError(err.message || String(err));
     }
-    renderHome();
-    showScreen('home');
-    checkBenchmarkPrompt();
-    scheduleReminders();
+  }
+
+  function showBootError(msg) {
+    var el = document.getElementById('screen-onboarding');
+    if (el) el.classList.remove('hidden');
+    var box = document.createElement('div');
+    box.className = 'card';
+    box.style.marginTop = '1rem';
+    box.style.color = '#9b2c2c';
+    box.innerHTML = '<p><strong>Could not start WurkOwt</strong></p><p>' + msg + '</p><p>Try: close Safari completely, reopen this link, or delete the home-screen icon and add it again.</p>';
+    if (el) el.appendChild(box);
   }
 
   function bindGlobal() {
-    $('#onboarding-form').addEventListener('submit', onOnboarding);
-    $('#btn-start').addEventListener('click', onStartClick);
-    $('#btn-prep').addEventListener('click', () => {
+    function on(id, evt, fn) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener(evt, fn);
+    }
+    on('onboarding-form', 'submit', onOnboarding);
+    on('btn-start', 'click', onStartClick);
+    on('btn-prep', 'click', function () {
       sessionCtx = { prepType: currentType() };
       openPrep(false);
     });
-    $('#prep-confirm').addEventListener('change', () => {
-      $('#btn-prep-start').disabled = !$('#prep-confirm').checked;
+    on('prep-confirm', 'change', function () {
+      var btn = document.getElementById('btn-prep-start');
+      var chk = document.getElementById('prep-confirm');
+      if (btn && chk) btn.disabled = !chk.checked;
     });
-    $('#btn-prep-start').addEventListener('click', () => startSessionFromPrep());
-    $('#btn-weigh').addEventListener('click', () => $('#dialog-weigh').showModal());
-    $('#weigh-form').addEventListener('submit', onWeighIn);
-    $('#btn-history').addEventListener('click', renderHistory);
-    $('#btn-settings').addEventListener('click', openSettings);
-    $('#btn-rest-walk').addEventListener('click', startWalkTimer);
-    $('#btn-train-anyway').addEventListener('click', openTrainAnyway);
-    $('#btn-train-cancel').addEventListener('click', () => $('#dialog-train-anyway').close());
-    $('#btn-train-go').addEventListener('click', confirmTrainAnyway);
-    $('#btn-cardio-outdoor').addEventListener('click', () => startCardio('outdoor'));
-    $('#btn-cardio-indoor').addEventListener('click', () => startCardio('indoor'));
-    $('#btn-skip-rest').addEventListener('click', hideRestTimer);
-    $('#btn-skip-interval').addEventListener('click', hideIntervalOverlay);
-    $('#btn-skip-session').addEventListener('click', skipDay);
+    on('btn-prep-start', 'click', startSessionFromPrep);
+    on('btn-weigh', 'click', function () {
+      var d = document.getElementById('dialog-weigh');
+      if (d && d.showModal) d.showModal();
+    });
+    on('weigh-form', 'submit', onWeighIn);
+    on('btn-history', 'click', renderHistory);
+    on('btn-settings', 'click', openSettings);
+    on('btn-rest-walk', 'click', startWalkTimer);
+    on('btn-train-anyway', 'click', openTrainAnyway);
+    on('btn-train-cancel', 'click', function () {
+      var d = document.getElementById('dialog-train-anyway');
+      if (d && d.close) d.close();
+    });
+    on('btn-train-go', 'click', confirmTrainAnyway);
+    on('btn-cardio-outdoor', 'click', function () { startCardio('outdoor'); });
+    on('btn-cardio-indoor', 'click', function () { startCardio('indoor'); });
+    on('btn-skip-rest', 'click', hideRestTimer);
+    on('btn-skip-interval', 'click', hideIntervalOverlay);
+    on('btn-skip-session', 'click', skipDay);
 
     $$('[data-back]').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -223,7 +260,7 @@
   }
 
   function startSessionFromPrep() {
-    const type = sessionCtx?.prepType || currentType();
+    const type = (sessionCtx && sessionCtx.prepType) || currentType();
     beginWorkout(type);
   }
 
@@ -492,11 +529,13 @@
       renderSession();
     });
 
-    $('[data-video]')?.addEventListener('click', function () {
+    var vidBtn = $('[data-video]');
+    if (vidBtn) vidBtn.addEventListener('click', function () {
       const q = decodeURIComponent(this.getAttribute('data-video'));
       openDemo(q, ex.name);
     });
-    $('.exercise-visual')?.addEventListener('click', function () {
+    var vis = $('.exercise-visual');
+    if (vis) vis.addEventListener('click', function () {
       openDemo(ex.videoQuery || ex.name, ex.name);
     });
   }
@@ -771,7 +810,7 @@
     if (!confirm('Skip this session and move to the next day in your plan?')) return;
     state = WurkStorage.addSession(state, {
       at: new Date().toISOString(),
-      type: sessionCtx?.type || currentType(),
+      type: (sessionCtx && sessionCtx.type) || currentType(),
       completed: false,
       skipped: true,
     });
@@ -874,7 +913,7 @@
         '<div class="card history-block"><h3>Starting point</h3><p>Weight: ' +
         base.weight +
         ' lb · Push-ups: ' +
-        (base.pushups ?? '—') +
+        (base.pushups != null ? base.pushups : '—') +
         '</p><p>Since start: ' +
         delta +
         ' lb</p></div>';

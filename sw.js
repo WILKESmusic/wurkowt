@@ -1,58 +1,37 @@
-const CACHE = 'wurkowt-v2';
-const ASSETS = [
-  './',
-  './index.html',
-  './css/styles.css',
-  './js/data.js',
-  './js/storage.js',
-  './js/app.js',
-  './manifest.webmanifest',
-  './icons/icon.svg',
-  './assets/exercises/incline-pushup.svg',
-  './assets/exercises/pike-pushup.svg',
-  './assets/exercises/plank.svg',
-  './assets/exercises/backpack-row.svg',
-  './assets/exercises/door-row.svg',
-  './assets/exercises/prone-ytw.svg',
-  './assets/exercises/reverse-fly.svg',
-  './assets/exercises/squat.svg',
-  './assets/exercises/lunge.svg',
-  './assets/exercises/rdl.svg',
-  './assets/exercises/calf.svg',
-  './assets/exercises/wall-sit.svg',
-  './assets/exercises/glute-bridge.svg',
-  './assets/exercises/fire-hydrant.svg',
-  './assets/exercises/dead-bug.svg',
-];
+const CACHE = 'wurkowt-v3';
 
-self.addEventListener('install', (e) => {
+self.addEventListener('install', function (e) {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', function (e) {
   e.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.keys().then(function (keys) {
+      return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+    }).then(function () { return self.clients.claim(); })
   );
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
-});
-
-self.addEventListener('fetch', (e) => {
+self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
+  var url = e.request.url;
+  var isPage = e.request.mode === 'navigate' ||
+    url.indexOf('.html') !== -1 ||
+    url.endsWith('/wurkowt') ||
+    url.endsWith('/wurkowt/');
+
+  if (isPage) {
+    e.respondWith(
+      fetch(e.request).catch(function () { return caches.match(e.request); })
+    );
+    return;
+  }
+
   e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const fetched = fetch(e.request)
-        .then((res) => {
-          if (res && res.status === 200 && res.type === 'basic') {
-            const clone = res.clone();
-            caches.open(CACHE).then((c) => c.put(e.request, clone));
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || fetched;
+    fetch(e.request).then(function (res) {
+      return res;
+    }).catch(function () {
+      return caches.match(e.request);
     })
   );
 });
