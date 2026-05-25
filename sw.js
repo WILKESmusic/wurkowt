@@ -1,4 +1,4 @@
-const CACHE = 'wurkowt-v1';
+const CACHE = 'wurkowt-v2';
 const ASSETS = [
   './',
   './index.html',

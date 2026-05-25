@@ -2,34 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#1a4d4d" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="WurkOwt" />
-  <title>WurkOwt</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="icons/icon-180.png" />
-  <link rel="apple-touch-icon" href="icons/icon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
   <script>
     window.WURKOWT_BASE = (function () {
       var p = location.pathname;
       if (p.indexOf('/wurkowt') !== -1) return '/wurkowt';
       return '';
     })();
+    if (window.WURKOWT_BASE) {
+      document.write('<base href="' + window.WURKOWT_BASE + '/" />');
+    }
   </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a4d4d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="WurkOwt" />
+  <title>WurkOwt</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div id="app">
     <!-- Onboarding -->
     <section id="screen-onboarding" class="screen hidden">
       <header class="screen-header">
-        <h1 class="brand">WurkOwt</h1>
+        <h1 class="brand" style="color:#1a4d4d">WurkOwt</h1>
         <p class="subtitle">Your body recomposition program. Let's save your starting point.</p>
       </header>
       <form id="onboarding-form" class="card stack">
@@ -43,7 +45,7 @@
     <!-- Home -->
     <section id="screen-home" class="screen hidden">
       <header class="home-header">
-        <h1 class="brand">WurkOwt</h1>
+        <h1 class="brand" style="color:#1a4d4d">WurkOwt</h1>
         <p id="home-progress" class="chip"></p>
       </header>
       <article id="home-hero" class="hero card"></article>
